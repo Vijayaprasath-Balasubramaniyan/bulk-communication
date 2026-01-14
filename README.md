@@ -1,7 +1,7 @@
 # Bulk SMS & Email Notification System
 
 ## Overview
-This system is designed to send bulk SMS and Email notifications** reliably. It supports asynchronous processing, handles high-volume traffic, and provides a retry mechanism for failed messages. Failed jobs are logged and can be retried manually via the admin dashboard.
+This system is designed to send bulk SMS and Email notifications reliably. It supports asynchronous processing, handles high-volume traffic, and provides a retry mechanism for failed messages. Failed jobs are logged and can be retried manually via the admin dashboard.
 
 The system uses:
 - SendGrid for Email notifications
