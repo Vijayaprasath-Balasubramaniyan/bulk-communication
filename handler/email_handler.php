@@ -6,6 +6,7 @@ $env = parse_ini_file(__DIR__ . '/../.env');
 
 define('MAX_RETRIES', (int)$env['MAX_RETRIES']);
 $limit = (int)$env['LIMIT_DATA'];
+$pdo->beginTransaction();
 $stmt = $pdo->prepare("
 SELECT * FROM message_queue
 WHERE channel='EMAIL'
@@ -13,13 +14,19 @@ AND status IN ('PENDING','FAILED')
 AND (next_retry_at IS NULL OR next_retry_at <= NOW())
 AND retry_count < :max
 LIMIT $limit
+FOR UPDATE
 ");
 
 $stmt->execute([':max' => MAX_RETRIES]);
-
-foreach ($stmt as $msg) {
+$messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$pdo->commit();
+foreach ($messages as $msg) {
 
     try {
+        $pdo->prepare("
+            UPDATE message_queue SET status='PROCESSING'
+            WHERE id=?
+        ")->execute([$msg['id']]);
         $payload = [
             "personalizations" => [[
                 "to" => [["email" => $msg['recipient']]],
@@ -41,8 +48,7 @@ foreach ($stmt as $msg) {
             CURLOPT_RETURNTRANSFER => true
         ]);
 
-        curl_exec($ch);
-
+    
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
@@ -89,6 +95,7 @@ foreach ($stmt as $msg) {
 
     } catch (Exception $e) {
 
+    //Failed Scenarios
         $retry = $msg['retry_count'] + 1;
 
         $pdo->prepare("
@@ -101,6 +108,13 @@ foreach ($stmt as $msg) {
             $retry,
             date('Y-m-d H:i:s', time() + pow(2, $retry) * 60),
             $msg['id']
+        ]);
+          $pdo->prepare("
+            INSERT INTO message_logs
+            (queue_id,status,error_reason)
+            VALUES (?,?,?)
+        ")->execute([
+            $msg['id'], 'FAILED', $e->getMessage()
         ]);
     }
 }
