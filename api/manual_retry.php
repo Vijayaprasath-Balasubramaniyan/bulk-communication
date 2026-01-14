@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/Database.php';
-
+require_once __DIR__ . '/../vendor/autoload.php';
 header('Content-Type: application/json');
 
 $pdo = Database::connect();
