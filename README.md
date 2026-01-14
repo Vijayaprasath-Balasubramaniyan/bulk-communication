@@ -1,7 +1,7 @@
 # Bulk SMS & Email Notification System
 
 ## Overview
-This system is designed to send bulk SMS and Email notifications** reliably. It supports asynchronous processing, handles high-volume traffic, and provides a retry mechanism for failed messages. Failed jobs are logged and can be retried manually via the admin dashboard.
+This system is designed to send bulk SMS and Email notifications reliably. It supports asynchronous processing, handles high-volume traffic, and provides a retry mechanism for failed messages. Failed jobs are logged and can be retried manually via the admin dashboard.
 
 The system uses:
 - SendGrid for Email notifications
@@ -54,22 +54,32 @@ The system uses:
 env
 
 DB_HOST=
+
 DB_NAME=
+
 DB_USER=
+
 DB_PASS=
+
 
 MAX_RETRIES=3
 
 SENDGRID_API_KEY=SG.XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 SENDGRID_TEMPLATE_ID=d-XXXXXXXXXXXXXXXXXXXXXXXXX
+
 SENDGRID_FROM_EMAIL=XXXXXXX@gmail.com
+
 SENDGRID_API=https://api.sendgrid.com/v3/mail/send
 
 TWILIO_SID=XXXXXXXXXXXXXXXXXXXXXXXXX
+
 TWILIO_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 TWILIO_FROM=+1XXXXXXXXXX
 
 LIMIT_DATA=100
+
 APP_URL=http://localhost/bulk-communication
 
 
