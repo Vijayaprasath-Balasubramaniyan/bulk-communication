@@ -44,18 +44,45 @@ foreach ($messages as $msg) {
 
        
         //twilio send SMS
-        $twilio->messages->create(
+       $response = $twilio->messages->create(
             $msg['recipient'],
             [
                 'from' => $env['TWILIO_FROM'],
                 'body' => $mes
             ]
         );
-    //Success
+        
+        if ($response->status === 'failed') {
+            echo $response->errorCode;  
+             $retry = $msg['retry_count'] + 1;
+             $pdo->prepare("
+                    UPDATE message_queue
+                    SET status='FAILED',
+                        retry_count=?,
+                        next_retry_at=?
+                    WHERE id=?
+                ")->execute([
+                    $retry,
+                    date('Y-m-d H:i:s', time() + pow(2, $retry) * 60),
+                    $msg['id']
+                ]);
+
+                $pdo->prepare("
+                    INSERT INTO message_logs
+                    (queue_id,status,error_reason)
+                    VALUES (?,?,?)
+                ")->execute([
+                    $msg['id'], 'FAILED', $response->errorMessage
+                ]);
+        }else{
+            //Success
         $pdo->prepare("
             UPDATE message_queue SET status='SENT'
             WHERE id=?
         ")->execute([$msg['id']]);
+
+        }
+        
 
     } catch (Exception $e) {
 

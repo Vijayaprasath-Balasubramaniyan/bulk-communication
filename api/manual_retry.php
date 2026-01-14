@@ -5,6 +5,12 @@ header('Content-Type: application/json');
 
 $pdo = Database::connect();
 $env = parse_ini_file(__DIR__ . '/../.env');
+use Twilio\Rest\Client;
+
+$twilio = new Client(
+    $env['TWILIO_SID'],
+    $env['TWILIO_TOKEN']
+);
 
 $id = (int)($_POST['id'] ?? 0);
 
@@ -61,31 +67,36 @@ try {
     /* SMS handler logic */
     if ($msg['channel'] === 'SMS') {
 
-        $url = "https://api.twilio.com/2010-04-01/Accounts/{$env['TWILIO_SID']}/Messages.json";
-          $payload = json_decode($msg['payload'], true);
-            $mes = "Hello {$payload['name']}, Greetings from Magick Tech!";
+        $payload = json_decode($msg['payload'], true);
+        $mes = "Hello {$payload['name']}, Greetings from Magick Tech!";
+        $pdo->prepare("
+            UPDATE message_queue SET status='PROCESSING',
+            message = ?
+            WHERE id=?
+        ")->execute([$mes,$msg['id']]);
 
-        $data = http_build_query([
-            'From' => $env['TWILIO_FROM'],
-            'To'   => $msg['recipient'],
-            'Body' => $mes
-        ]);
-
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_USERPWD => "{$env['TWILIO_SID']}:{$env['TWILIO_TOKEN']}"
-        ]);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode < 200 || $httpCode >= 300) {
+       
+        //twilio send SMS
+       $response = $twilio->messages->create(
+            $msg['recipient'],
+            [
+                'from' => $env['TWILIO_FROM'],
+                'body' => $mes
+            ]
+        );
+        
+        if ($response->status === 'failed') {
             throw new Exception("Twilio Error: {$response}");
+        }else{
+            //Success
+        $pdo->prepare("
+            UPDATE message_queue SET status='SENT'
+            WHERE id=?
+        ")->execute([$msg['id']]);
+
         }
+        
+
     }
 
     /* success  */
