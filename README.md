@@ -54,9 +54,13 @@ The system uses:
 env
 
 DB_HOST=
+
 DB_NAME=
+
 DB_USER=
+
 DB_PASS=
+
 
 MAX_RETRIES=3
 
