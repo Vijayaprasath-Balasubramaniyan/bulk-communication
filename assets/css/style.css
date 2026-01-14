@@ -1,0 +1,89 @@
+/* details.php */
+body {
+  background: #f4f6f9;
+}
+.table td {
+  vertical-align: middle;
+}
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-sent { background:#d1e7dd; color:#0f5132; }
+.status-failed { background:#f8d7da; color:#842029; }
+.status-pending { background:#fff3cd; color:#664d03; }
+
+.channel-icon {
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+}
+.sms { background:#0d6efd; }
+.email { background:#198754; }
+.filt { background:#1f234f; }
+
+.filter-box {
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-start;
+  white-space: nowrap;
+}
+
+.action-buttons .btn {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+ /* logs.php  */
+.timeline {
+    position: relative;
+    padding-left: 40px;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #dee2e6;
+}
+.timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+}
+.timeline-dot {
+    position: absolute;
+    left: -2px;
+    top: 17px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #6c757d;
+}
+.timeline-dot.failed { background: #dc3545; }
+.timeline-dot.sent { background: #28a745; }
+.timeline-dot.processing { background: #ffc107; }
+.timeline-content {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    border-radius: 6px;
+}
+.timeline-time {
+    font-size: 12px;
+    color: #6c757d;
+}
+

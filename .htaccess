@@ -1,0 +1,8 @@
+Options -Indexes
+
+DirectoryIndex admin/dashboard.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^$ admin/dashboard.php [L]
+</IfModule>
